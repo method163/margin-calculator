@@ -42,6 +42,7 @@
             font-size: 20px;
             margin-bottom: 20px;
             text-align: center;
+            color: #333;
         }
 
         .grid {
@@ -75,6 +76,7 @@
             -moz-appearance: none;
             appearance: none;
             background: #fff;
+            color: #333;
         }
 
         input:focus {
@@ -93,12 +95,14 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
+            color: #333;
         }
 
         .value {
             font-weight: 600;
             margin-top: 6px;
             font-size: 20px;
+            color: #333;
         }
 
         /* Улучшенные мобильные блоки */
@@ -109,10 +113,12 @@
             background: #e0f0ff;
             border-radius: 8px;
             border-left: 4px solid #007bff;
+            color: #333;
         }
 
         .mobile-result-block .value {
             font-size: 20px;
+            color: #333;
         }
 
         /* Адаптация для мобильных */
@@ -192,7 +198,7 @@
             }
         }
 
-        /* Поддержка темной темы Telegram */
+        /* Поддержка темной темы Telegram - ИСПРАВЛЕНО */
         .telegram-theme-dark {
             background: #0f0f0f;
         }
@@ -201,9 +207,12 @@
             background: #1a1a1a;
         }
         
-        .telegram-theme-dark h1,
-        .telegram-theme-dark label {
+        .telegram-theme-dark h1 {
             color: #ffffff;
+        }
+        
+        .telegram-theme-dark label {
+            color: #cccccc;
         }
         
         .telegram-theme-dark input {
@@ -212,13 +221,32 @@
             color: #ffffff;
         }
         
+        .telegram-theme-dark input::placeholder {
+            color: #888;
+        }
+        
+        /* ИСПРАВЛЕНИЕ: Текст в блоках результатов теперь виден в темной теме */
         .telegram-theme-dark .result,
         .telegram-theme-dark .mobile-result-block {
             background: #2a2a2a;
+            color: #cccccc !important; /* Делаем текст светлым */
+            border-left-color: #3390ec; /* Более яркий цвет границы для темной темы */
+        }
+        
+        /* ИСПРАВЛЕНИЕ: Текст внутри блоков результатов */
+        .telegram-theme-dark .result div:not(.value),
+        .telegram-theme-dark .mobile-result-block div:not(.value) {
+            color: #cccccc !important;
         }
         
         .telegram-theme-dark .value {
-            color: #ffffff;
+            color: #ffffff !important; /* Значения делаем белыми для контраста */
+        }
+        
+        /* Для мобильных блоков отдельно */
+        .telegram-theme-dark .mobile-result-block div:first-child,
+        .telegram-theme-dark .mobile-result-block div:nth-child(3) {
+            color: #cccccc !important;
         }
     </style>
 </head>
@@ -283,24 +311,26 @@
                 tg.expand();
                 
                 // Устанавливаем тему в зависимости от Telegram
-                if (tg.colorScheme === 'dark') {
-                    document.body.classList.add('telegram-theme-dark');
-                }
+                updateTelegramTheme();
                 
                 // Следим за изменением темы
-                tg.onEvent('themeChanged', function() {
-                    if (tg.colorScheme === 'dark') {
-                        document.body.classList.add('telegram-theme-dark');
-                    } else {
-                        document.body.classList.remove('telegram-theme-dark');
-                    }
-                });
+                tg.onEvent('themeChanged', updateTelegramTheme);
                 
                 // Говорим Telegram, что приложение готово
                 tg.ready();
             }
         } catch (e) {
             console.log('Telegram Web App не загружен, работаем в браузере');
+        }
+
+        function updateTelegramTheme() {
+            if (tg && tg.colorScheme === 'dark') {
+                document.body.classList.add('telegram-theme-dark');
+                console.log('Применена темная тема Telegram');
+            } else {
+                document.body.classList.remove('telegram-theme-dark');
+                console.log('Применена светлая тема Telegram');
+            }
         }
 
         // Основной код калькулятора (без изменений)
@@ -435,6 +465,20 @@
         inputs.forEach(input => {
             input.addEventListener('focus', (e) => {
                 unformatInput(e.target);
+                
+                // ВИБРАЦИЯ: Проверяем, доступен ли HapticFeedback (исправленная версия)
+                if (window.Telegram && window.Telegram.WebApp) {
+                    const tgApp = window.Telegram.WebApp;
+                    // Проверяем существование объекта HapticFeedback и его метода impactOccurred
+                    if (tgApp.HapticFeedback && typeof tgApp.HapticFeedback.impactOccurred === 'function') {
+                        try {
+                            tgApp.HapticFeedback.impactOccurred('light');
+                        } catch (hapticError) {
+                            // Игнорируем ошибки, если haptic feedback недоступен
+                            console.log('Haptic feedback не поддерживается в этой версии Telegram');
+                        }
+                    }
+                }
             });
 
             input.addEventListener('blur', () => {
@@ -454,23 +498,12 @@
         // Инициализация формата
         inputs.forEach(formatInput);
         
-        // Фокус на первое поле при загрузке
+        // Фокус на первое поле при загрузке (только на десктопе)
         setTimeout(() => {
             if (window.innerWidth > 767) {
                 clientVat.focus();
             }
         }, 100);
-        
-        // Вибрация при взаимодействии (только в Telegram)
-        inputs.forEach(input => {
-            input.addEventListener('focus', () => {
-                if (tg && tg.HapticFeedback) {
-                    try {
-                        tg.HapticFeedback.impactOccurred('light');
-                    } catch (e) {}
-                }
-            });
-        });
     </script>
 </body>
 </html>
