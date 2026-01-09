@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>Калькулятор маржи</title>
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* Базовые стили, остаются почти без изменений */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #2c3649;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 16px;
+            padding-top: calc(16px + env(safe-area-inset-top, 0px));
+            padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            padding-left: calc(16px + env(safe-area-inset-left, 0px));
+            padding-right: calc(16px + env(safe-area-inset-right, 0px));
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 620px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        label {
+            font-size: 13px;
+            color: #333;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            margin: 6px 0 14px 0;
+            border: 1px solid #a5a5a5;
+            border-radius: 8px;
+            font-size: 20px;
+            text-align: right;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background: #fff;
+        }
+
+        input:focus {
+            font-size: 20px !important;
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .result {
+            margin-top: 14px;
+            padding: 12px;
+            font-size: 14px;
+            background: #e0f0ff;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .value {
+            font-weight: 600;
+            margin-top: 6px;
+            font-size: 20px;
+        }
+
+        /* Улучшенные мобильные блоки */
+        .mobile-result-block {
+            display: block;
+            margin-top: 15px;
+            padding: 15px;
+            background: #e0f0ff;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+
+        .mobile-result-block .value {
+            font-size: 20px;
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 767px) {
+            body {
+                padding: 12px;
+                align-items: flex-start;
+                min-height: auto;
+                height: auto;
+                padding-top: calc(12px + env(safe-area-inset-top, 0px));
+                padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .card {
+                padding: 16px;
+                border-radius: 10px;
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            label {
+                font-size: 16px;
+            }
+
+            input {
+                padding: 10px 16px;
+                margin: 4px 0 10px 0;
+                font-size: 20px;
+            }
+
+            /* На мобильных показываем только мобильные блоки */
+            .result {
+                display: none;
+            }
+
+            .mobile-result-block {
+                display: block;
+            }
+
+            .grid > div:last-child input:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        /* Десктоп: скрываем мобильные блоки, показываем обычные */
+        @media (min-width: 768px) {
+            .mobile-result-block {
+                display: none;
+            }
+            
+            .result {
+                display: grid;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 12px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            input {
+                padding: 8px 10px;
+                font-size: 20px;
+            }
+        }
+
+        /* Поддержка темной темы Telegram */
+        .telegram-theme-dark {
+            background: #0f0f0f;
+        }
+        
+        .telegram-theme-dark .card {
+            background: #1a1a1a;
+        }
+        
+        .telegram-theme-dark h1,
+        .telegram-theme-dark label {
+            color: #ffffff;
+        }
+        
+        .telegram-theme-dark input {
+            background: #2a2a2a;
+            border-color: #444;
+            color: #ffffff;
+        }
+        
+        .telegram-theme-dark .result,
+        .telegram-theme-dark .mobile-result-block {
+            background: #2a2a2a;
+        }
+        
+        .telegram-theme-dark .value {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Калькулятор маржи</h1>
+
+        <div class="grid">
+            <div>
+                <label>Тариф заказчика с НДС 22%:</label>
+                <input id="clientVat" type="text" inputmode="decimal" placeholder="0.00">
+
+                <label>Тариф перевозчика с НДС 22%:</label>
+                <input id="carrierVat" type="text" inputmode="decimal" placeholder="0.00">
+
+                <!-- Десктопный блок результатов -->
+                <div class="result">
+                    <div>Маржа с НДС: <div class="value" id="marginVat">—</div></div>
+                    <div>Маржинальность: <div class="value" id="marginVatPercent">—</div></div>
+                </div>
+
+                <!-- Мобильный блок результатов -->
+                <div class="mobile-result-block" id="mobileVatResult">
+                    <div>Маржа с НДС:</div>
+                    <div class="value" id="mobileMarginVat">—</div>
+                    <div>Маржинальность:</div>
+                    <div class="value" id="mobileMarginVatPercent">—</div>
+                </div>
+            </div>
+            
+            <div>
+                <label>Тариф заказчика без НДС:</label>
+                <input id="clientNoVat" type="text" inputmode="decimal" placeholder="0.00">
+
+                <label>Тариф перевозчика без НДС:</label>
+                <input id="carrierNoVat" type="text" inputmode="decimal" placeholder="0.00">
+
+                <!-- Десктопный блок результатов -->
+                <div class="result">
+                    <div>Маржа без НДС: <div class="value" id="marginNoVat">—</div></div>
+                    <div>Маржинальность: <div class="value" id="marginNoVatPercent">—</div></div>
+                </div>
+
+                <!-- Мобильный блок результатов -->
+                <div class="mobile-result-block" id="mobileNoVatResult">
+                    <div>Маржа без НДС:</div>
+                    <div class="value" id="mobileMarginNoVat">—</div>
+                    <div>Маржинальность:</div>
+                    <div class="value" id="mobileMarginNoVatPercent">—</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        let tg;
+        try {
+            tg = window.Telegram.WebApp;
+            if (tg) {
+                // Раскрываем приложение на весь экран
+                tg.expand();
+                
+                // Устанавливаем тему в зависимости от Telegram
+                if (tg.colorScheme === 'dark') {
+                    document.body.classList.add('telegram-theme-dark');
+                }
+                
+                // Следим за изменением темы
+                tg.onEvent('themeChanged', function() {
+                    if (tg.colorScheme === 'dark') {
+                        document.body.classList.add('telegram-theme-dark');
+                    } else {
+                        document.body.classList.remove('telegram-theme-dark');
+                    }
+                });
+                
+                // Говорим Telegram, что приложение готово
+                tg.ready();
+            }
+        } catch (e) {
+            console.log('Telegram Web App не загружен, работаем в браузере');
+        }
+
+        // Основной код калькулятора (без изменений)
+        const VAT = 0.22;
+        let lock = false;
+
+        function formatNumber(num) {
+            if (num === null || isNaN(num)) return '';
+            return num.toLocaleString('ru-RU', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function parseFormattedNumber(str) {
+            if (!str || str.trim() === '') return NaN;
+            const cleaned = str.replace(/\s/g, '').replace(',', '.');
+            const num = parseFloat(cleaned);
+            return isNaN(num) ? NaN : num;
+        }
+
+        function unformatInput(input) {
+            input.value = '';
+        }
+
+        function formatInput(input) {
+            const num = parseFormattedNumber(input.value);
+            if (!isNaN(num)) {
+                input.value = formatNumber(num);
+            } else {
+                input.value = '';
+            }
+        }
+
+        function handleInput(e) {
+            const input = e.target;
+            const id = input.id;
+
+            if (id === 'clientVat') {
+                sync(true, clientVat, clientNoVat);
+            } else if (id === 'clientNoVat') {
+                sync(false, clientVat, clientNoVat);
+            } else if (id === 'carrierVat') {
+                sync(true, carrierVat, carrierNoVat);
+            } else if (id === 'carrierNoVat') {
+                sync(false, carrierVat, carrierNoVat);
+            }
+        }
+
+        function sync(fromVat, vatEl, noVatEl) {
+            if (lock) return;
+            lock = true;
+
+            const val = parseFormattedNumber(fromVat ? vatEl.value : noVatEl.value);
+            if (!isNaN(val)) {
+                if (fromVat) {
+                    const noVatValue = val / (1 + VAT);
+                    noVatEl.value = formatNumber(noVatValue);
+                } else {
+                    const vatValue = val * (1 + VAT);
+                    vatEl.value = formatNumber(vatValue);
+                }
+            } else {
+                if (fromVat) {
+                    noVatEl.value = '';
+                } else {
+                    vatEl.value = '';
+                }
+            }
+
+            lock = false;
+            calculate();
+        }
+
+        function updateResultDisplay() {
+            const clientVat = parseFormattedNumber(document.getElementById('clientVat').value);
+            const carrierVat = parseFormattedNumber(document.getElementById('carrierVat').value);
+            const clientNoVat = parseFormattedNumber(document.getElementById('clientNoVat').value);
+            const carrierNoVat = parseFormattedNumber(document.getElementById('carrierNoVat').value);
+
+            // Расчеты для НДС
+            if (!isNaN(clientVat) && !isNaN(carrierVat)) {
+                const marginVat = clientVat - carrierVat;
+                const percentVat = clientVat !== 0 ? (marginVat / clientVat) * 100 : 0;
+
+                // Обновляем десктопный блок
+                document.getElementById('marginVat').textContent = formatNumber(marginVat);
+                document.getElementById('marginVatPercent').textContent = formatNumber(percentVat) + ' %';
+
+                // Обновляем мобильный блок
+                document.getElementById('mobileMarginVat').textContent = formatNumber(marginVat);
+                document.getElementById('mobileMarginVatPercent').textContent = formatNumber(percentVat) + ' %';
+            } else {
+                const dash = '—';
+                document.getElementById('marginVat').textContent = dash;
+                document.getElementById('marginVatPercent').textContent = dash;
+                document.getElementById('mobileMarginVat').textContent = dash;
+                document.getElementById('mobileMarginVatPercent').textContent = dash;
+            }
+
+            // Расчеты без НДС
+            if (!isNaN(clientNoVat) && !isNaN(carrierNoVat)) {
+                const marginNoVat = clientNoVat - carrierNoVat;
+                const percentNoVat = clientNoVat !== 0 ? (marginNoVat / clientNoVat) * 100 : 0;
+
+                // Обновляем десктопный блок
+                document.getElementById('marginNoVat').textContent = formatNumber(marginNoVat);
+                document.getElementById('marginNoVatPercent').textContent = formatNumber(percentNoVat) + ' %';
+
+                // Обновляем мобильный блок
+                document.getElementById('mobileMarginNoVat').textContent = formatNumber(marginNoVat);
+                document.getElementById('mobileMarginNoVatPercent').textContent = formatNumber(percentNoVat) + ' %';
+            } else {
+                const dash = '—';
+                document.getElementById('marginNoVat').textContent = dash;
+                document.getElementById('marginNoVatPercent').textContent = dash;
+                document.getElementById('mobileMarginNoVat').textContent = dash;
+                document.getElementById('mobileMarginNoVatPercent').textContent = dash;
+            }
+        }
+
+        // Псевдоним для обратной совместимости
+        const calculate = updateResultDisplay;
+
+        const clientVat = document.getElementById('clientVat');
+        const clientNoVat = document.getElementById('clientNoVat');
+        const carrierVat = document.getElementById('carrierVat');
+        const carrierNoVat = document.getElementById('carrierNoVat');
+
+        const inputs = document.querySelectorAll('input[type="text"]');
+
+        inputs.forEach(input => {
+            input.addEventListener('focus', (e) => {
+                unformatInput(e.target);
+            });
+
+            input.addEventListener('blur', () => {
+                inputs.forEach(formatInput);
+                calculate();
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.target.blur();
+                }
+            });
+
+            input.addEventListener('input', handleInput);
+        });
+
+        // Инициализация формата
+        inputs.forEach(formatInput);
+        
+        // Фокус на первое поле при загрузке
+        setTimeout(() => {
+            if (window.innerWidth > 767) {
+                clientVat.focus();
+            }
+        }, 100);
+        
+        // Вибрация при взаимодействии (только в Telegram)
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                if (tg && tg.HapticFeedback) {
+                    try {
+                        tg.HapticFeedback.impactOccurred('light');
+                    } catch (e) {}
+                }
+            });
+        });
+    </script>
+</body>
+</html>
