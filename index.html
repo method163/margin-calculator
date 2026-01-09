@@ -229,8 +229,8 @@
         .telegram-theme-dark .result,
         .telegram-theme-dark .mobile-result-block {
             background: #2a2a2a;
-            color: #cccccc !important; /* Делаем текст светлым */
-            border-left-color: #3390ec; /* Более яркий цвет границы для темной темы */
+            color: #cccccc !important;
+            border-left-color: #3390ec;
         }
         
         /* ИСПРАВЛЕНИЕ: Текст внутри блоков результатов */
@@ -240,7 +240,7 @@
         }
         
         .telegram-theme-dark .value {
-            color: #ffffff !important; /* Значения делаем белыми для контраста */
+            color: #ffffff !important;
         }
         
         /* Для мобильных блоков отдельно */
@@ -466,16 +466,17 @@
             input.addEventListener('focus', (e) => {
                 unformatInput(e.target);
                 
-                // ВИБРАЦИЯ: Проверяем, доступен ли HapticFeedback (исправленная версия)
+                // ВИБРАЦИЯ: Надежная проверка доступности функции
                 if (window.Telegram && window.Telegram.WebApp) {
-                    const tgApp = window.Telegram.WebApp;
-                    // Проверяем существование объекта HapticFeedback и его метода impactOccurred
-                    if (tgApp.HapticFeedback && typeof tgApp.HapticFeedback.impactOccurred === 'function') {
+                    const tg = window.Telegram.WebApp;
+                    
+                    // Проверка через isVersionAtLeast (рекомендуется)
+                    if (tg.isVersionAtLeast && tg.isVersionAtLeast('6.1')) {
                         try {
-                            tgApp.HapticFeedback.impactOccurred('light');
-                        } catch (hapticError) {
-                            // Игнорируем ошибки, если haptic feedback недоступен
-                            console.log('Haptic feedback не поддерживается в этой версии Telegram');
+                            tg.HapticFeedback.impactOccurred('light');
+                        } catch (e) {
+                            // Функция есть, но что-то пошло не так
+                            console.log('Haptic feedback вызвал ошибку:', e);
                         }
                     }
                 }
@@ -504,6 +505,39 @@
                 clientVat.focus();
             }
         }, 100);
+
+        // НОВЫЙ КОД: Обработчик тапа вне поля ввода для Telegram Web App
+        document.addEventListener('click', function(event) {
+            const isInput = event.target.closest('input[type="text"]');
+            if (!isInput) {
+                // Если кликнули не по input, проверяем активный элемент
+                const activeElement = document.activeElement;
+                if (activeElement && activeElement.tagName === 'INPUT' && 
+                    activeElement.type === 'text' && 
+                    activeElement.matches('input[type="text"]')) {
+                    
+                    // Принудительно вызываем blur на активном поле
+                    activeElement.blur();
+                }
+            }
+        });
+
+        // Дополнительно: обработчик для touch событий (мобильные устройства)
+        document.addEventListener('touchstart', function(event) {
+            const isInput = event.target.closest('input[type="text"]');
+            if (!isInput) {
+                const activeElement = document.activeElement;
+                if (activeElement && activeElement.tagName === 'INPUT' && 
+                    activeElement.type === 'text' && 
+                    activeElement.matches('input[type="text"]')) {
+                    
+                    // Плавно снимаем фокус
+                    setTimeout(() => {
+                        activeElement.blur();
+                    }, 50);
+                }
+            }
+        }, { passive: true });
     </script>
 </body>
 </html>
