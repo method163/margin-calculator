@@ -538,18 +538,18 @@
 
                     <!-- Десктопный блок результатов -->
                     <div class="result">
-                        <div>Маржа с НДС: <div class="value" id="marginVat">—</div>
+                        <div>Выручка с НДС: <div class="value" id="marginVat">—</div>
                         </div>
-                        <div>Маржинальность: <div class="value" id="marginVatPercent">—</div>
-                        </div>
+                        <!-- <div>Маржинальность: <div class="value" id="marginVatPercent">—</div>
+                        </div> -->
                     </div>
 
                     <!-- Мобильный блок результатов -->
                     <div class="mobile-result-block" id="mobileVatResult">
-                        <div>Маржа с НДС:</div>
+                        <div>Выручка с НДС:</div>
                         <div class="value" id="mobileMarginVat">—</div>
-                        <div>Маржинальность:</div>
-                        <div class="value" id="mobileMarginVatPercent">—</div>
+                        <!-- <div>Маржинальность:</div>
+                        <div class="value" id="mobileMarginVatPercent">—</div> -->
                     </div>
                 </div>
 
@@ -562,7 +562,7 @@
 
                     <!-- Десктопный блок результатов -->
                     <div class="result">
-                        <div>Маржа без НДС: <div class="value" id="marginNoVat">—</div>
+                        <div>Выручка без НДС: <div class="value" id="marginNoVat">—</div>
                         </div>
                         <div>Маржинальность: <div class="value" id="marginNoVatPercent">—</div>
                         </div>
@@ -570,7 +570,7 @@
 
                     <!-- Мобильный блок результатов -->
                     <div class="mobile-result-block" id="mobileNoVatResult">
-                        <div>Маржа без НДС:</div>
+                        <div>Выручка без НДС:</div>
                         <div class="value" id="mobileMarginNoVat">—</div>
                         <div>Маржинальность:</div>
                         <div class="value" id="mobileMarginNoVatPercent">—</div>
@@ -697,17 +697,17 @@
 
                 // Обновляем десктопный блок
                 document.getElementById('marginVat').textContent = formatNumber(marginVat);
-                document.getElementById('marginVatPercent').textContent = formatNumber(percentVat) + ' %';
+                // document.getElementById('marginVatPercent').textContent = formatNumber(percentVat) + ' %';
 
                 // Обновляем мобильный блок
                 document.getElementById('mobileMarginVat').textContent = formatNumber(marginVat);
-                document.getElementById('mobileMarginVatPercent').textContent = formatNumber(percentVat) + ' %';
+                // document.getElementById('mobileMarginVatPercent').textContent = formatNumber(percentVat) + ' %';
             } else {
                 const dash = '—';
                 document.getElementById('marginVat').textContent = dash;
-                document.getElementById('marginVatPercent').textContent = dash;
+                // document.getElementById('marginVatPercent').textContent = dash;
                 document.getElementById('mobileMarginVat').textContent = dash;
-                document.getElementById('mobileMarginVatPercent').textContent = dash;
+                // document.getElementById('mobileMarginVatPercent').textContent = dash;
             }
 
             // Расчеты без НДС
@@ -825,7 +825,7 @@
             const clientVatVal = document.getElementById('clientVat').value || '0.00';
             const carrierVatVal = document.getElementById('carrierVat').value || '0.00';
             const marginVatVal = document.getElementById('marginVat').textContent;
-            const marginVatPercentVal = document.getElementById('marginVatPercent').textContent;
+            // const marginVatPercentVal = document.getElementById('marginVatPercent').textContent;
 
             const clientNoVatVal = document.getElementById('clientNoVat').value || '0.00';
             const carrierNoVatVal = document.getElementById('carrierNoVat').value || '0.00';
@@ -843,13 +843,13 @@
 --- РАСЧЕТ С НДС (22%) ---
 Тариф заказчика: ${clientVatVal}
 Тариф перевозчика: ${carrierVatVal}
-Маржа: ${marginVatVal}
-Маржинальность: ${marginVatPercentVal}
+Выручка: ${marginVatVal}
 
 --- РАСЧЕТ БЕЗ НДС ---
 Тариф заказчика: ${clientNoVatVal}
 Тариф перевозчика: ${carrierNoVatVal}
-Маржа: ${marginNoVatVal}
+Выручка: ${marginNoVatVal}
+
 Маржинальность: ${marginNoVatPercentVal}
 `;
 
