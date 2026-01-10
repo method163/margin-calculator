@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>Калькулятор маржи</title>
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- html2canvas-pro через CDN -->
+    <!-- Include html2canvas-pro from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.6.4/dist/html2canvas-pro.min.js"></script>
     <style>
         /* Базовые стили, остаются почти без изменений */
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background: #2c3649;
@@ -36,6 +41,9 @@
             width: 100%;
             max-width: 620px;
             box-sizing: border-box;
+            position: relative;
+            padding-top: 60px;
+            /* Добавляем отступ для кнопок */
         }
 
         h1 {
@@ -43,6 +51,86 @@
             margin-bottom: 20px;
             text-align: center;
             color: #333;
+        }
+
+        /* Панель с кнопками действий */
+        .card-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .action-btn:hover {
+            background: #e0e0e0;
+            transform: scale(1.1);
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .action-btn.copy::before {
+            content: "📄";
+        }
+
+        .action-btn.download::before {
+            content: "💾";
+        }
+
+        .action-btn.share::before {
+            content: "📤";
+        }
+
+        /* Уведомление о копировании */
+        .copy-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            display: none;
+            animation: fadeInOut 2s ease;
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 1;
+            }
+
+            85% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
         }
 
         .grid {
@@ -136,6 +224,20 @@
                 padding: 16px;
                 border-radius: 10px;
                 max-width: 100%;
+                padding-top: 55px;
+                /* Меньший отступ на мобильных */
+            }
+
+            .card-actions {
+                top: 10px;
+                right: 10px;
+                gap: 8px;
+            }
+
+            .action-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
             }
 
             h1 {
@@ -167,7 +269,7 @@
                 display: block;
             }
 
-            .grid > div:last-child input:last-child {
+            .grid>div:last-child input:last-child {
                 margin-bottom: 0;
             }
         }
@@ -177,7 +279,7 @@
             .mobile-result-block {
                 display: none;
             }
-            
+
             .result {
                 display: grid;
             }
@@ -186,6 +288,7 @@
         @media (max-width: 480px) {
             .card {
                 padding: 12px;
+                padding-top: 50px;
             }
 
             h1 {
@@ -202,29 +305,39 @@
         .telegram-theme-dark {
             background: #0f0f0f;
         }
-        
+
         .telegram-theme-dark .card {
             background: #1a1a1a;
         }
-        
+
         .telegram-theme-dark h1 {
             color: #ffffff;
         }
-        
+
         .telegram-theme-dark label {
             color: #cccccc;
         }
-        
+
         .telegram-theme-dark input {
             background: #2a2a2a;
             border-color: #444;
             color: #ffffff;
         }
-        
+
         .telegram-theme-dark input::placeholder {
             color: #888;
         }
-        
+
+        /* Кнопки в темной теме */
+        .telegram-theme-dark .action-btn {
+            background: #333;
+            color: #ddd;
+        }
+
+        .telegram-theme-dark .action-btn:hover {
+            background: #444;
+        }
+
         /* ИСПРАВЛЕНИЕ: Текст в блоках результатов теперь виден в темной теме */
         .telegram-theme-dark .result,
         .telegram-theme-dark .mobile-result-block {
@@ -232,17 +345,17 @@
             color: #cccccc !important;
             border-left-color: #3390ec;
         }
-        
+
         /* ИСПРАВЛЕНИЕ: Текст внутри блоков результатов */
         .telegram-theme-dark .result div:not(.value),
         .telegram-theme-dark .mobile-result-block div:not(.value) {
             color: #cccccc !important;
         }
-        
+
         .telegram-theme-dark .value {
             color: #ffffff !important;
         }
-        
+
         /* Для мобильных блоков отдельно */
         .telegram-theme-dark .mobile-result-block div:first-child,
         .telegram-theme-dark .mobile-result-block div:nth-child(3) {
@@ -250,8 +363,19 @@
         }
     </style>
 </head>
+
 <body>
-    <div class="card">
+    <div class="card" id="cardToCapture">
+        <!-- Панель с кнопками действий -->
+        <div class="card-actions">
+            <button class="action-btn copy" title="Копировать расчеты"></button>
+            <button class="action-btn download" title="Скачать изображение"></button>
+            <button class="action-btn share" title="Поделиться"></button>
+        </div>
+
+        <!-- Уведомление о копировании -->
+        <div class="copy-notification" id="copyNotification">Скопировано в буфер обмена!</div>
+
         <h1>Калькулятор маржи</h1>
 
         <div class="grid">
@@ -264,8 +388,10 @@
 
                 <!-- Десктопный блок результатов -->
                 <div class="result">
-                    <div>Маржа с НДС: <div class="value" id="marginVat">—</div></div>
-                    <div>Маржинальность: <div class="value" id="marginVatPercent">—</div></div>
+                    <div>Маржа с НДС: <div class="value" id="marginVat">—</div>
+                    </div>
+                    <div>Маржинальность: <div class="value" id="marginVatPercent">—</div>
+                    </div>
                 </div>
 
                 <!-- Мобильный блок результатов -->
@@ -276,7 +402,7 @@
                     <div class="value" id="mobileMarginVatPercent">—</div>
                 </div>
             </div>
-            
+
             <div>
                 <label>Тариф заказчика без НДС:</label>
                 <input id="clientNoVat" type="text" inputmode="decimal" placeholder="0.00">
@@ -286,8 +412,10 @@
 
                 <!-- Десктопный блок результатов -->
                 <div class="result">
-                    <div>Маржа без НДС: <div class="value" id="marginNoVat">—</div></div>
-                    <div>Маржинальность: <div class="value" id="marginNoVatPercent">—</div></div>
+                    <div>Маржа без НДС: <div class="value" id="marginNoVat">—</div>
+                    </div>
+                    <div>Маржинальность: <div class="value" id="marginNoVatPercent">—</div>
+                    </div>
                 </div>
 
                 <!-- Мобильный блок результатов -->
@@ -309,13 +437,13 @@
             if (tg) {
                 // Раскрываем приложение на весь экран
                 tg.expand();
-                
+
                 // Устанавливаем тему в зависимости от Telegram
                 updateTelegramTheme();
-                
+
                 // Следим за изменением темы
                 tg.onEvent('themeChanged', updateTelegramTheme);
-                
+
                 // Говорим Telegram, что приложение готово
                 tg.ready();
             }
@@ -465,11 +593,11 @@
         inputs.forEach(input => {
             input.addEventListener('focus', (e) => {
                 unformatInput(e.target);
-                
+
                 // ВИБРАЦИЯ: Надежная проверка доступности функции
                 if (window.Telegram && window.Telegram.WebApp) {
                     const tg = window.Telegram.WebApp;
-                    
+
                     // Проверка через isVersionAtLeast (рекомендуется)
                     if (tg.isVersionAtLeast && tg.isVersionAtLeast('6.1')) {
                         try {
@@ -498,7 +626,7 @@
 
         // Инициализация формата
         inputs.forEach(formatInput);
-        
+
         // Фокус на первое поле при загрузке (только на десктопе)
         setTimeout(() => {
             if (window.innerWidth > 767) {
@@ -507,15 +635,15 @@
         }, 100);
 
         // НОВЫЙ КОД: Обработчик тапа вне поля ввода для Telegram Web App
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             const isInput = event.target.closest('input[type="text"]');
             if (!isInput) {
                 // Если кликнули не по input, проверяем активный элемент
                 const activeElement = document.activeElement;
-                if (activeElement && activeElement.tagName === 'INPUT' && 
-                    activeElement.type === 'text' && 
+                if (activeElement && activeElement.tagName === 'INPUT' &&
+                    activeElement.type === 'text' &&
                     activeElement.matches('input[type="text"]')) {
-                    
+
                     // Принудительно вызываем blur на активном поле
                     activeElement.blur();
                 }
@@ -523,14 +651,14 @@
         });
 
         // Дополнительно: обработчик для touch событий (мобильные устройства)
-        document.addEventListener('touchstart', function(event) {
+        document.addEventListener('touchstart', function (event) {
             const isInput = event.target.closest('input[type="text"]');
             if (!isInput) {
                 const activeElement = document.activeElement;
-                if (activeElement && activeElement.tagName === 'INPUT' && 
-                    activeElement.type === 'text' && 
+                if (activeElement && activeElement.tagName === 'INPUT' &&
+                    activeElement.type === 'text' &&
                     activeElement.matches('input[type="text"]')) {
-                    
+
                     // Плавно снимаем фокус
                     setTimeout(() => {
                         activeElement.blur();
@@ -538,6 +666,206 @@
                 }
             }
         }, { passive: true });
+
+        // ==================== НОВЫЕ ФУНКЦИИ ДЛЯ КНОПОК ====================
+
+        // 1. Функция для копирования расчетов в текстовом формате
+        function copyCalculations() {
+            const clientVatVal = document.getElementById('clientVat').value || '0.00';
+            const carrierVatVal = document.getElementById('carrierVat').value || '0.00';
+            const marginVatVal = document.getElementById('marginVat').textContent;
+            const marginVatPercentVal = document.getElementById('marginVatPercent').textContent;
+
+            const clientNoVatVal = document.getElementById('clientNoVat').value || '0.00';
+            const carrierNoVatVal = document.getElementById('carrierNoVat').value || '0.00';
+            const marginNoVatVal = document.getElementById('marginNoVat').textContent;
+            const marginNoVatPercentVal = document.getElementById('marginNoVatPercent').textContent;
+
+            const timestamp = new Date().toLocaleString('ru-RU');
+
+            const textToCopy = `
+КАЛЬКУЛЯТОР МАРЖИ
+===============================
+
+РАСЧЕТЫ С НДС (22%)
+Тариф заказчика: ${clientVatVal} ₽
+Тариф перевозчика: ${carrierVatVal} ₽
+Маржа: ${marginVatVal} ₽
+Маржинальность: ${marginVatPercentVal}
+
+РАСЧЕТЫ БЕЗ НДС
+Тариф заказчика: ${clientNoVatVal} ₽
+Тариф перевозчика: ${carrierNoVatVal} ₽
+Маржа: ${marginNoVatVal} ₽
+Маржинальность: ${marginNoVatPercentVal}
+
+===============================
+Расчет выполнен: ${timestamp}
+`;
+
+            // Копирование в буфер обмена
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showCopyNotification();
+            }).catch(err => {
+                console.error('Ошибка копирования:', err);
+                // Fallback для старых браузеров
+                const textArea = document.createElement('textarea');
+                textArea.value = textToCopy;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showCopyNotification();
+            });
+        }
+
+        function showCopyNotification() {
+            const notification = document.getElementById('copyNotification');
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
+
+        // 2. Функция для создания и скачивания изображения
+        async function downloadImage() {
+            try {
+                const cardElement = document.getElementById('cardToCapture');
+
+                // Создаем изображение с помощью html2canvas-pro
+                const canvas = await html2canvas(cardElement, {
+                    scale: 2, // Увеличиваем качество
+                    useCORS: true,
+                    backgroundColor: null,
+                    logging: false
+                });
+
+                // Конвертируем canvas в blob с сжатием
+                canvas.toBlob(function (blob) {
+                    if (!blob) {
+                        console.error('Не удалось создать изображение');
+                        return;
+                    }
+
+                    // Создаем ссылку для скачивания
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `расчет-маржи-${Date.now()}.png`;
+
+                    // Добавляем ссылку в документ и кликаем
+                    document.body.appendChild(link);
+                    link.click();
+
+                    // Очищаем
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+
+                    // Виброотклик при успешном скачивании
+                    if (tg && tg.isVersionAtLeast && tg.isVersionAtLeast('6.1')) {
+                        try {
+                            tg.HapticFeedback.impactOccurred('light');
+                        } catch (e) { }
+                    }
+                }, 'image/png', 0.8); // Сжатие 80%
+
+            } catch (error) {
+                console.error('Ошибка создания изображения:', error);
+                alert('Не удалось создать изображение. Попробуйте еще раз.');
+            }
+        }
+
+        // 3. Функция для поделиться изображением
+        async function shareImage() {
+            try {
+                const cardElement = document.getElementById('cardToCapture');
+
+                // Создаем изображение
+                const canvas = await html2canvas(cardElement, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: null,
+                    logging: false
+                });
+
+                // Конвертируем canvas в blob
+                canvas.toBlob(async function (blob) {
+                    if (!blob) {
+                        console.error('Не удалось создать изображение для шаринга');
+                        return;
+                    }
+
+                    // Создаем файл из blob
+                    const file = new File([blob], `расчет-маржи-${Date.now()}.png`, {
+                        type: 'image/png'
+                    });
+
+                    // Пытаемся использовать Web Share API если доступно
+                    if (navigator.share && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'Расчет маржи',
+                                text: 'Посмотрите результаты расчета маржи!'
+                            });
+                        } catch (shareError) {
+                            console.log('Web Share не сработал:', shareError);
+                            fallbackShare(file);
+                        }
+                    } else {
+                        fallbackShare(file);
+                    }
+                }, 'image/png', 0.8);
+
+            } catch (error) {
+                console.error('Ошибка при создании изображения для шаринга:', error);
+                alert('Не удалось подготовить изображение для отправки.');
+            }
+        }
+
+        function fallbackShare(file) {
+            // Если Web Share API не доступен, используем Telegram Web App API
+            if (tg && tg.shareImage) {
+                try {
+                    // Создаем Data URL из blob для Telegram
+                    const reader = new FileReader();
+                    reader.onloadend = function () {
+                        const base64data = reader.result;
+                        tg.shareImage(base64data);
+                    };
+                    reader.readAsDataURL(file);
+                } catch (tgError) {
+                    console.log('Telegram share не сработал:', tgError);
+                    // Последний вариант - скачивание
+                    alert('Функция "Поделиться" недоступна. Изображение будет скачано.');
+                    downloadImage();
+                }
+            } else {
+                // Если и Telegram API не доступен, просто скачиваем
+                alert('Функция "Поделиться" недоступна в этом браузере. Изображение будет скачано.');
+                downloadImage();
+            }
+        }
+
+        // Назначаем обработчики для кнопок
+        document.querySelector('.action-btn.copy').addEventListener('click', copyCalculations);
+        document.querySelector('.action-btn.download').addEventListener('click', downloadImage);
+        document.querySelector('.action-btn.share').addEventListener('click', shareImage);
+
+        // Виброотклик для кнопок
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                if (window.Telegram && window.Telegram.WebApp) {
+                    const tg = window.Telegram.WebApp;
+                    if (tg.isVersionAtLeast && tg.isVersionAtLeast('6.1')) {
+                        try {
+                            tg.HapticFeedback.impactOccurred('light');
+                        } catch (e) { }
+                    }
+                }
+            });
+        });
     </script>
 </body>
+
 </html>
