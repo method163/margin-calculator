@@ -10,7 +10,9 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- Подключение Google Material Symbols с оптимизацией -->
     <!-- Загружаем только необходимые иконки для уменьшения размера файла -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&icon_names=content_copy,download,ios_share" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&icon_names=content_copy,download,ios_share"
+        rel="stylesheet" />
     <!-- html2canvas-pro через CDN -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.6.4/dist/html2canvas-pro.min.js"></script>
     <style>
@@ -22,7 +24,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background: #2c3649;
+            background: #021e53;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -40,7 +42,8 @@
             font-family: 'Material Symbols Outlined';
             font-weight: normal;
             font-style: normal;
-            font-size: 24px; /* Оптимальный размер для кнопок 36x36 */
+            font-size: 24px;
+            /* Оптимальный размер для кнопок 36x36 */
             line-height: 1;
             letter-spacing: normal;
             text-transform: none;
@@ -53,33 +56,60 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* Контейнер для всей карточки */
+        .card-container {
+            width: 100%;
+            max-width: 620px;
+            position: relative;
+        }
+
         .card {
             background: #ffffff;
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             width: 100%;
-            max-width: 620px;
             box-sizing: border-box;
-            position: relative;
-            padding-top: 60px; /* Добавляем отступ для кнопок */
+            padding-top: 20px;
+            /* Уменьшен отступ сверху */
+        }
+
+        /* Фиксированный заголовок с кнопками */
+        .card-header {
+            position: sticky;
+            /* top: 16px; */
+            top: calc(12px + env(safe-area-inset-top, 0px));
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgb(68 113 159 / 50%);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
         }
 
         h1 {
-            font-size: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #333;
+            font-size: 18px;
+            /* Уменьшенный размер шрифта */
+            margin: 0;
+            text-align: left;
+            color: #ffffff;
+            flex: 1;
+            padding-right: 10px;
+            /* padding-left: 6px; */
         }
 
         /* Панель с кнопками действий */
         .card-actions {
-            position: absolute;
-            top: 15px;
-            right: 15px;
             display: flex;
-            gap: 20px;
-            z-index: 10;
+            gap: 10px;
+            z-index: 1000;
+            position: relative;
         }
 
         .action-btn {
@@ -93,8 +123,9 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            font-size: 0; /* Скрываем текст, оставляем только иконку */
-            color: #a3a3a3;
+            font-size: 0;
+            /* Скрываем текст, оставляем только иконку */
+            color: #333;
             position: relative;
         }
 
@@ -107,12 +138,6 @@
             transform: scale(0.95);
         }
 
-        /* Удалены старые стили с псевдоэлементами:
-        .action-btn.copy::before
-        .action-btn.download::before  
-        .action-btn.share::before
-        */
-
         /* Уведомление о копировании */
         .copy-notification {
             position: fixed;
@@ -124,16 +149,62 @@
             padding: 12px 24px;
             border-radius: 8px;
             font-size: 14px;
-            z-index: 1000;
+            z-index: 1001;
+            /* Выше панели кнопок */
             display: none;
             animation: fadeInOut 2s ease;
         }
 
         @keyframes fadeInOut {
-            0% { opacity: 0; }
-            15% { opacity: 1; }
-            85% { opacity: 1; }
-            100% { opacity: 0; }
+            0% {
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 1;
+            }
+
+            85% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* Стили для textarea */
+        .order-textarea {
+            margin-bottom: 20px;
+        }
+
+        .order-textarea label {
+            font-size: 13px;
+            color: #333;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .order-textarea textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #a5a5a5;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            resize: vertical;
+            min-height: 60px;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background: #fff;
+            color: #333;
+        }
+
+        .order-textarea textarea:focus {
+            outline: none;
+            border-color: #007bff;
         }
 
         .grid {
@@ -223,31 +294,55 @@
                 padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
             }
 
+            .card-container {
+                padding-top: 0;
+            }
+
             .card {
                 padding: 16px;
                 border-radius: 10px;
                 max-width: 100%;
-                padding-top: 55px; /* Меньший отступ на мобильных */
             }
 
-            .card-actions {
-                top: 10px;
-                right: 10px;
-                gap: 20px;
+            .card-header {
+                position: sticky;
+                top: calc(12px + env(safe-area-inset-top, 0px));
+                z-index: 1000;
+                background: rgb(68 113 159 / 50%);
+                backdrop-filter: blur(10px);
+                padding: 16px;
+                border-radius: 8px;
+                margin-bottom: 15px;
             }
 
-            .action-btn {
-                width: 48px;
-                height: 48px;
-            }
-
-            .material-symbols-outlined {
-                font-size: 24px; /* Немного меньше на мобильных */
+            .telegram-theme-dark .card-header {
+                background: rgba(26, 26, 26, 0.95);
             }
 
             h1 {
+                font-size: 18px;
+                /* Еще меньше на мобильных */
+                padding-right: 5px;
+                padding-left: 0;
+            }
+
+            .card-actions {
+                gap: 18px;
+            }
+
+            .action-btn {
+                width: 40px;
+                height: 40px;
+            }
+
+            .material-symbols-outlined {
                 font-size: 20px;
-                margin-bottom: 20px;
+            }
+
+            .order-textarea textarea {
+                padding: 10px 12px;
+                font-size: 14px;
+                min-height: 55px;
             }
 
             .grid {
@@ -293,16 +388,30 @@
         @media (max-width: 480px) {
             .card {
                 padding: 12px;
-                padding-top: 50px;
             }
 
             h1 {
-                font-size: 20px;
+                font-size: 18px;
+                padding-left: 0;
             }
 
             input {
                 padding: 8px 10px;
                 font-size: 20px;
+            }
+
+            /* Уменьшаем кнопки на очень маленьких экранах */
+            .card-actions {
+                gap: 18px;
+            }
+
+            .action-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .material-symbols-outlined {
+                font-size: 18px;
             }
         }
 
@@ -315,8 +424,13 @@
             background: #1a1a1a;
         }
 
+        .telegram-theme-dark .card-header {
+            background: rgba(26, 26, 26, 0.95);
+        }
+
         .telegram-theme-dark h1 {
             color: #ffffff;
+            padding-left: 0;
         }
 
         .telegram-theme-dark label {
@@ -330,6 +444,17 @@
         }
 
         .telegram-theme-dark input::placeholder {
+            color: #888;
+        }
+
+        /* Стили для textarea в темной теме */
+        .telegram-theme-dark .order-textarea textarea {
+            background: #2a2a2a;
+            border-color: #444;
+            color: #ffffff;
+        }
+
+        .telegram-theme-dark .order-textarea textarea::placeholder {
             color: #888;
         }
 
@@ -375,71 +500,81 @@
 </head>
 
 <body>
-    <div class="card" id="cardToCapture">
-        <!-- Панель с кнопками действий -->
-        <div class="card-actions">
-            <button class="action-btn copy" title="Копировать расчеты">
-                <span class="material-symbols-outlined">content_copy</span>
-            </button>
-            <button class="action-btn download" title="Скачать изображение">
-                <span class="material-symbols-outlined">download</span>
-            </button>
-            <button class="action-btn share" title="Поделиться">
-                <span class="material-symbols-outlined">ios_share</span>
-            </button>
+    <div class="card-container">
+        <!-- Фиксированный заголовок с кнопками -->
+        <div class="card-header" id="cardHeader">
+            <h1>Калькулятор маржи</h1>
+            <div class="card-actions">
+                <button class="action-btn copy" title="Копировать расчеты">
+                    <span class="material-symbols-outlined">content_copy</span>
+                </button>
+                <button class="action-btn download" title="Скачать изображение">
+                    <span class="material-symbols-outlined">download</span>
+                </button>
+                <button class="action-btn share" title="Поделиться">
+                    <span class="material-symbols-outlined">ios_share</span>
+                </button>
+            </div>
         </div>
 
         <!-- Уведомление о копировании -->
         <div class="copy-notification" id="copyNotification">Скопировано в буфер обмена!</div>
 
-        <h1>Калькулятор маржи</h1>
-
-        <div class="grid">
-            <div>
-                <label>Тариф заказчика с НДС 22%:</label>
-                <input id="clientVat" type="text" inputmode="decimal" placeholder="0.00">
-
-                <label>Тариф перевозчика с НДС 22%:</label>
-                <input id="carrierVat" type="text" inputmode="decimal" placeholder="0.00">
-
-                <!-- Десктопный блок результатов -->
-                <div class="result">
-                    <div>Маржа с НДС: <div class="value" id="marginVat">—</div>
-                    </div>
-                    <div>Маржинальность: <div class="value" id="marginVatPercent">—</div>
-                    </div>
-                </div>
-
-                <!-- Мобильный блок результатов -->
-                <div class="mobile-result-block" id="mobileVatResult">
-                    <div>Маржа с НДС:</div>
-                    <div class="value" id="mobileMarginVat">—</div>
-                    <div>Маржинальность:</div>
-                    <div class="value" id="mobileMarginVatPercent">—</div>
-                </div>
+        <!-- Основная карточка без заголовка и кнопок -->
+        <div class="card" id="cardToCapture">
+            <!-- Добавленное поле textarea -->
+            <div class="order-textarea">
+                <label for="orderInfo">Заявка:</label>
+                <textarea id="orderInfo" placeholder="Введите информацию о заказе"></textarea>
             </div>
 
-            <div>
-                <label>Тариф заказчика без НДС:</label>
-                <input id="clientNoVat" type="text" inputmode="decimal" placeholder="0.00">
+            <div class="grid">
+                <div>
+                    <label>Тариф заказчика с НДС 22%:</label>
+                    <input id="clientVat" type="text" inputmode="decimal" placeholder="0.00">
 
-                <label>Тариф перевозчика без НДС:</label>
-                <input id="carrierNoVat" type="text" inputmode="decimal" placeholder="0.00">
+                    <label>Тариф перевозчика с НДС 22%:</label>
+                    <input id="carrierVat" type="text" inputmode="decimal" placeholder="0.00">
 
-                <!-- Десктопный блок результатов -->
-                <div class="result">
-                    <div>Маржа без НДС: <div class="value" id="marginNoVat">—</div>
+                    <!-- Десктопный блок результатов -->
+                    <div class="result">
+                        <div>Маржа с НДС: <div class="value" id="marginVat">—</div>
+                        </div>
+                        <div>Маржинальность: <div class="value" id="marginVatPercent">—</div>
+                        </div>
                     </div>
-                    <div>Маржинальность: <div class="value" id="marginNoVatPercent">—</div>
+
+                    <!-- Мобильный блок результатов -->
+                    <div class="mobile-result-block" id="mobileVatResult">
+                        <div>Маржа с НДС:</div>
+                        <div class="value" id="mobileMarginVat">—</div>
+                        <div>Маржинальность:</div>
+                        <div class="value" id="mobileMarginVatPercent">—</div>
                     </div>
                 </div>
 
-                <!-- Мобильный блок результатов -->
-                <div class="mobile-result-block" id="mobileNoVatResult">
-                    <div>Маржа без НДС:</div>
-                    <div class="value" id="mobileMarginNoVat">—</div>
-                    <div>Маржинальность:</div>
-                    <div class="value" id="mobileMarginNoVatPercent">—</div>
+                <div>
+                    <label>Тариф заказчика без НДС:</label>
+                    <input id="clientNoVat" type="text" inputmode="decimal" placeholder="0.00">
+
+                    <label>Тариф перевозчика без НДС:</label>
+                    <input id="carrierNoVat" type="text" inputmode="decimal" placeholder="0.00">
+
+                    <!-- Десктопный блок результатов -->
+                    <div class="result">
+                        <div>Маржа без НДС: <div class="value" id="marginNoVat">—</div>
+                        </div>
+                        <div>Маржинальность: <div class="value" id="marginNoVatPercent">—</div>
+                        </div>
+                    </div>
+
+                    <!-- Мобильный блок результатов -->
+                    <div class="mobile-result-block" id="mobileNoVatResult">
+                        <div>Маржа без НДС:</div>
+                        <div class="value" id="mobileMarginNoVat">—</div>
+                        <div>Маржинальность:</div>
+                        <div class="value" id="mobileMarginNoVatPercent">—</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -697,19 +832,21 @@
             const marginNoVatVal = document.getElementById('marginNoVat').textContent;
             const marginNoVatPercentVal = document.getElementById('marginNoVatPercent').textContent;
 
+            const orderInfoVal = document.getElementById('orderInfo').value.trim();
             const timestamp = new Date().toLocaleString('ru-RU');
 
             const textToCopy = `
-[Информация_о_заказе]
 =============================
-
---- РАСЧЕТЫ С НДС (22%) ---
+СОГЛАСОВАНИЕ ТАРИФА
+по заявке: ${orderInfoVal ? orderInfoVal : ''}
+=============================
+--- РАСЧЕТ С НДС (22%) ---
 Тариф заказчика: ${clientVatVal} ₽
 Тариф перевозчика: ${carrierVatVal} ₽
 Маржа: ${marginVatVal} ₽
 Маржинальность: ${marginVatPercentVal}
 
---- РАСЧЕТЫ БЕЗ НДС ---
+--- РАСЧЕТ БЕЗ НДС ---
 Тариф заказчика: ${clientNoVatVal} ₽
 Тариф перевозчика: ${carrierNoVatVal} ₽
 Маржа: ${marginNoVatVal} ₽
@@ -743,10 +880,15 @@
             }, 2000);
         }
 
-        // 2. Функция для создания и скачивания изображения
+        // 2. Функция для создания и скачивания изображения (ОБНОВЛЕНА)
         async function downloadImage() {
             try {
                 const cardElement = document.getElementById('cardToCapture');
+                const cardHeader = document.getElementById('cardHeader');
+
+                // Временно скрываем заголовок с кнопками
+                const originalDisplay = cardHeader.style.display;
+                cardHeader.style.display = 'none';
 
                 // Создаем изображение с помощью html2canvas-pro
                 const canvas = await html2canvas(cardElement, {
@@ -755,6 +897,9 @@
                     backgroundColor: null,
                     logging: false
                 });
+
+                // Восстанавливаем заголовок
+                cardHeader.style.display = originalDisplay;
 
                 // Конвертируем canvas в blob с сжатием
                 canvas.toBlob(function (blob) {
@@ -791,10 +936,15 @@
             }
         }
 
-        // 3. Функция для поделиться изображением
+        // 3. Функция для поделиться изображением (ОБНОВЛЕНА)
         async function shareImage() {
             try {
                 const cardElement = document.getElementById('cardToCapture');
+                const cardHeader = document.getElementById('cardHeader');
+
+                // Временно скрываем заголовок с кнопками
+                const originalDisplay = cardHeader.style.display;
+                cardHeader.style.display = 'none';
 
                 // Создаем изображение
                 const canvas = await html2canvas(cardElement, {
@@ -803,6 +953,9 @@
                     backgroundColor: null,
                     logging: false
                 });
+
+                // Восстанавливаем заголовок
+                cardHeader.style.display = originalDisplay;
 
                 // Конвертируем canvas в blob
                 canvas.toBlob(async function (blob) {
