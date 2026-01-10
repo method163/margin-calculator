@@ -838,7 +838,8 @@
             const textToCopy = `
 =========================
 СОГЛАСОВАНИЕ ТАРИФА
-по заявке: ${orderInfoVal ? orderInfoVal : ''}
+по заявке: 
+${orderInfoVal ? orderInfoVal : ''}
 =========================
 --- РАСЧЕТ С НДС (22%) ---
 Тариф заказчика: ${clientVatVal}
@@ -849,7 +850,7 @@
 Тариф заказчика: ${clientNoVatVal}
 Тариф перевозчика: ${carrierNoVatVal}
 Выручка: ${marginNoVatVal}
-
+-------------------------
 Маржинальность: ${marginNoVatPercentVal}
 `;
 
