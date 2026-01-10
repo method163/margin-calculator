@@ -8,8 +8,10 @@
     <title>Калькулятор маржи</title>
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Подключение Google Material Symbols с оптимизацией -->
+    <!-- Загружаем только необходимые иконки для уменьшения размера файла -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&icon_names=content_copy,download,ios_share" rel="stylesheet" />
     <!-- html2canvas-pro через CDN -->
-    <!-- Include html2canvas-pro from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.6.4/dist/html2canvas-pro.min.js"></script>
     <style>
         /* Базовые стили, остаются почти без изменений */
@@ -33,6 +35,24 @@
             padding-right: calc(16px + env(safe-area-inset-right, 0px));
         }
 
+        /* Стили для Material Symbols */
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px; /* Оптимальный размер для кнопок 36x36 */
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            background: transparent;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+
         .card {
             background: #ffffff;
             padding: 20px;
@@ -42,8 +62,7 @@
             max-width: 620px;
             box-sizing: border-box;
             position: relative;
-            padding-top: 60px;
-            /* Добавляем отступ для кнопок */
+            padding-top: 60px; /* Добавляем отступ для кнопок */
         }
 
         h1 {
@@ -59,7 +78,7 @@
             top: 15px;
             right: 15px;
             display: flex;
-            gap: 10px;
+            gap: 20px;
             z-index: 10;
         }
 
@@ -74,30 +93,25 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            font-size: 18px;
-            color: #555;
+            font-size: 0; /* Скрываем текст, оставляем только иконку */
+            color: #a3a3a3;
+            position: relative;
         }
 
         .action-btn:hover {
-            background: #e0e0e0;
-            transform: scale(1.1);
+            background: #e0f0ff;
+            /*transform: scale(1.1);*/
         }
 
         .action-btn:active {
             transform: scale(0.95);
         }
 
-        .action-btn.copy::before {
-            content: "📄";
-        }
-
-        .action-btn.download::before {
-            content: "💾";
-        }
-
-        .action-btn.share::before {
-            content: "📤";
-        }
+        /* Удалены старые стили с псевдоэлементами:
+        .action-btn.copy::before
+        .action-btn.download::before  
+        .action-btn.share::before
+        */
 
         /* Уведомление о копировании */
         .copy-notification {
@@ -116,21 +130,10 @@
         }
 
         @keyframes fadeInOut {
-            0% {
-                opacity: 0;
-            }
-
-            15% {
-                opacity: 1;
-            }
-
-            85% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-            }
+            0% { opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         .grid {
@@ -224,20 +227,22 @@
                 padding: 16px;
                 border-radius: 10px;
                 max-width: 100%;
-                padding-top: 55px;
-                /* Меньший отступ на мобильных */
+                padding-top: 55px; /* Меньший отступ на мобильных */
             }
 
             .card-actions {
                 top: 10px;
                 right: 10px;
-                gap: 8px;
+                gap: 20px;
             }
 
             .action-btn {
-                width: 32px;
-                height: 32px;
-                font-size: 16px;
+                width: 48px;
+                height: 48px;
+            }
+
+            .material-symbols-outlined {
+                font-size: 24px; /* Немного меньше на мобильных */
             }
 
             h1 {
@@ -338,6 +343,11 @@
             background: #444;
         }
 
+        /* Иконки в темной теме */
+        .telegram-theme-dark .material-symbols-outlined {
+            color: #ddd;
+        }
+
         /* ИСПРАВЛЕНИЕ: Текст в блоках результатов теперь виден в темной теме */
         .telegram-theme-dark .result,
         .telegram-theme-dark .mobile-result-block {
@@ -368,9 +378,15 @@
     <div class="card" id="cardToCapture">
         <!-- Панель с кнопками действий -->
         <div class="card-actions">
-            <button class="action-btn copy" title="Копировать расчеты"></button>
-            <button class="action-btn download" title="Скачать изображение"></button>
-            <button class="action-btn share" title="Поделиться"></button>
+            <button class="action-btn copy" title="Копировать расчеты">
+                <span class="material-symbols-outlined">content_copy</span>
+            </button>
+            <button class="action-btn download" title="Скачать изображение">
+                <span class="material-symbols-outlined">download</span>
+            </button>
+            <button class="action-btn share" title="Поделиться">
+                <span class="material-symbols-outlined">ios_share</span>
+            </button>
         </div>
 
         <!-- Уведомление о копировании -->
@@ -684,22 +700,22 @@
             const timestamp = new Date().toLocaleString('ru-RU');
 
             const textToCopy = `
-КАЛЬКУЛЯТОР МАРЖИ
-===============================
+КАЛЬКУЛЯТОР МАРЖИ [номер_заказа]
+=================================
 
-РАСЧЕТЫ С НДС (22%)
+== РАСЧЕТЫ С НДС (22%) ==
 Тариф заказчика: ${clientVatVal} ₽
 Тариф перевозчика: ${carrierVatVal} ₽
 Маржа: ${marginVatVal} ₽
 Маржинальность: ${marginVatPercentVal}
 
-РАСЧЕТЫ БЕЗ НДС
+== РАСЧЕТЫ БЕЗ НДС ==
 Тариф заказчика: ${clientNoVatVal} ₽
 Тариф перевозчика: ${carrierNoVatVal} ₽
 Маржа: ${marginNoVatVal} ₽
 Маржинальность: ${marginNoVatPercentVal}
 
-===============================
+=================================
 Расчет выполнен: ${timestamp}
 `;
 
@@ -806,7 +822,7 @@
                             await navigator.share({
                                 files: [file],
                                 title: 'Расчет маржи',
-                                text: 'Посмотрите результаты расчета маржи!'
+                                /*text: 'Посмотрите результаты расчета маржи!'*/
                             });
                         } catch (shareError) {
                             console.log('Web Share не сработал:', shareError);
