@@ -836,24 +836,21 @@
             const timestamp = new Date().toLocaleString('ru-RU');
 
             const textToCopy = `
-=============================
+=========================
 СОГЛАСОВАНИЕ ТАРИФА
 по заявке: ${orderInfoVal ? orderInfoVal : ''}
-=============================
+=========================
 --- РАСЧЕТ С НДС (22%) ---
-Тариф заказчика: ${clientVatVal} ₽
-Тариф перевозчика: ${carrierVatVal} ₽
-Маржа: ${marginVatVal} ₽
+Тариф заказчика: ${clientVatVal}
+Тариф перевозчика: ${carrierVatVal}
+Маржа: ${marginVatVal}
 Маржинальность: ${marginVatPercentVal}
 
 --- РАСЧЕТ БЕЗ НДС ---
-Тариф заказчика: ${clientNoVatVal} ₽
-Тариф перевозчика: ${carrierNoVatVal} ₽
-Маржа: ${marginNoVatVal} ₽
+Тариф заказчика: ${clientNoVatVal}
+Тариф перевозчика: ${carrierNoVatVal}
+Маржа: ${marginNoVatVal}
 Маржинальность: ${marginNoVatPercentVal}
-
-=============================
-Расчет выполнен: ${timestamp}
 `;
 
             // Копирование в буфер обмена
