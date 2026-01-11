@@ -284,6 +284,26 @@
             color: #333;
         }
 
+        /* Новый блок для маржинальности без НДС */
+        .total-margin-block {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 16px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .total-margin-block .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #28a745;
+        }
+
         /* Адаптация для мобильных */
         @media (max-width: 767px) {
             body {
@@ -373,6 +393,20 @@
 
             .grid>div:last-child input:last-child {
                 margin-bottom: 0;
+            }
+
+            /* Адаптация нового блока для мобильных */
+            .total-margin-block {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 14px;
+                margin-top: 15px;
+            }
+            
+            .total-margin-block .value {
+                margin-top: 8px;
+                font-size: 22px;
+                align-self: flex-end;
             }
         }
 
@@ -498,6 +532,17 @@
         .telegram-theme-dark .mobile-result-block div:nth-child(3) {
             color: #cccccc !important;
         }
+
+        /* Темная тема для нового блока */
+        .telegram-theme-dark .total-margin-block {
+            background: #2a2a2a;
+            color: #cccccc;
+            border-left-color: #34c759;
+        }
+
+        .telegram-theme-dark .total-margin-block .value {
+            color: #34c759;
+        }
     </style>
 </head>
 
@@ -562,22 +607,25 @@
                     <label>Тариф перевозчика без НДС:</label>
                     <input id="carrierNoVat" type="text" inputmode="decimal" placeholder="0.00">
 
-                    <!-- Десктопный блок результатов -->
+                    <!-- Десктопный блок результатов - ТОЛЬКО Выручка -->
                     <div class="result">
-                        <div>Выручка без НДС: <div class="value" id="marginNoVat">—</div>
-                        </div>
-                        <div>Маржинальность: <div class="value" id="marginNoVatPercent">—</div>
-                        </div>
+                        <div>Выручка без НДС: <div class="value" id="marginNoVat">—</div></div>
+                        <!-- Убрана строка с маржинальностью -->
                     </div>
 
-                    <!-- Мобильный блок результатов -->
+                    <!-- Мобильный блок результатов - ТОЛЬКО Выручка -->
                     <div class="mobile-result-block" id="mobileNoVatResult">
                         <div>Выручка без НДС:</div>
                         <div class="value" id="mobileMarginNoVat">—</div>
-                        <div>Маржинальность:</div>
-                        <div class="value" id="mobileMarginNoVatPercent">—</div>
+                        <!-- Убраны строки с маржинальностью -->
                     </div>
                 </div>
+            </div>
+
+            <!-- Новый блок для маржинальности без НДС -->
+            <div class="total-margin-block">
+                <div>Маржинальность без НДС:</div>
+                <div class="value" id="totalMarginNoVatPercent">—</div>
             </div>
         </div>
     </div>
@@ -719,17 +767,22 @@
 
                 // Обновляем десктопный блок
                 document.getElementById('marginNoVat').textContent = formatNumber(marginNoVat);
-                document.getElementById('marginNoVatPercent').textContent = formatNumber(percentNoVat) + ' %';
+                // document.getElementById('marginNoVatPercent').textContent = formatNumber(percentNoVat) + ' %';
 
                 // Обновляем мобильный блок
                 document.getElementById('mobileMarginNoVat').textContent = formatNumber(marginNoVat);
-                document.getElementById('mobileMarginNoVatPercent').textContent = formatNumber(percentNoVat) + ' %';
+                // document.getElementById('mobileMarginNoVatPercent').textContent = formatNumber(percentNoVat) + ' %';
+
+                // Обновляем новый блок внизу
+                document.getElementById('totalMarginNoVatPercent').textContent = 
+                    formatNumber(percentNoVat) + ' %';
             } else {
                 const dash = '—';
                 document.getElementById('marginNoVat').textContent = dash;
-                document.getElementById('marginNoVatPercent').textContent = dash;
+                // document.getElementById('marginNoVatPercent').textContent = dash;
                 document.getElementById('mobileMarginNoVat').textContent = dash;
-                document.getElementById('mobileMarginNoVatPercent').textContent = dash;
+                // document.getElementById('mobileMarginNoVatPercent').textContent = dash;
+                document.getElementById('totalMarginNoVatPercent').textContent = dash;
             }
         }
 
@@ -832,7 +885,7 @@
             const clientNoVatVal = document.getElementById('clientNoVat').value || '0.00';
             const carrierNoVatVal = document.getElementById('carrierNoVat').value || '0.00';
             const marginNoVatVal = document.getElementById('marginNoVat').textContent;
-            const marginNoVatPercentVal = document.getElementById('marginNoVatPercent').textContent;
+            const totalMarginNoVatPercentVal = document.getElementById('totalMarginNoVatPercent').textContent;
 
             const orderInfoVal = document.getElementById('orderInfo').value.trim();
             const timestamp = new Date().toLocaleString('ru-RU');
@@ -853,7 +906,7 @@ ${orderInfoVal ? orderInfoVal : ''}
 Тариф перевозчика: ${carrierNoVatVal}
 Выручка: ${marginNoVatVal}
 -------------------------
-Маржинальность: ${marginNoVatPercentVal}
+Маржинальность: ${totalMarginNoVatPercentVal}
 `;
 
             // Копирование в буфер обмена
