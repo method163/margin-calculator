@@ -266,6 +266,7 @@
             margin-top: 6px;
             font-size: 20px;
             color: #333;
+            text-align: left;
         }
 
         /* Улучшенные мобильные блоки */
@@ -282,26 +283,28 @@
         .mobile-result-block .value {
             font-size: 20px;
             color: #333;
+            text-align: left;
         }
 
         /* Новый блок для маржинальности без НДС */
         .total-margin-block {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: block;
             margin-top: 20px;
             padding: 16px;
-            background: #f0f8ff;
+            background: #f8d9ff;
             border-radius: 8px;
-            border-left: 4px solid #28a745;
+            border-left: 4px solid #9d4edd;
             font-size: 16px;
+            text-align: center;
             color: #333;
         }
 
         .total-margin-block .value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #28a745;
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-top: 6px;
         }
 
         /* Адаптация для мобильных */
@@ -397,16 +400,12 @@
 
             /* Адаптация нового блока для мобильных */
             .total-margin-block {
-                flex-direction: column;
-                align-items: flex-start;
                 padding: 14px;
                 margin-top: 15px;
             }
             
             .total-margin-block .value {
                 margin-top: 8px;
-                font-size: 22px;
-                align-self: flex-end;
             }
         }
 
@@ -537,11 +536,11 @@
         .telegram-theme-dark .total-margin-block {
             background: #2a2a2a;
             color: #cccccc;
-            border-left-color: #34c759;
+            border-left-color: #9d4edd;
         }
 
         .telegram-theme-dark .total-margin-block .value {
-            color: #34c759;
+            color: #ffffff;
         }
     </style>
 </head>
