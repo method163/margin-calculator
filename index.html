@@ -322,6 +322,12 @@
             margin-top: 6px;
         }
 
+        /* Светло-голубой фон для блока чистой прибыли */
+        .total-margin-block.profit-block {
+            background: #e0f0ff;
+            border-left-color: #007bff;
+        }
+
         /* Адаптация для мобильных */
         @media (max-width: 767px) {
             body {
@@ -557,6 +563,11 @@
         .telegram-theme-dark .total-margin-block .value {
             color: #ffffff;
         }
+
+        /* Темная тема: голубая полоса для блока чистой прибыли */
+        .telegram-theme-dark .total-margin-block.profit-block {
+            border-left-color: #3390ec;
+        }
     </style>
 </head>
 
@@ -608,7 +619,7 @@
             </div>
 
             <!-- Блок чистой прибыли на всю ширину -->
-            <div class="total-margin-block">
+            <div class="total-margin-block profit-block">
                 <div>Чистая прибыль:</div>
                 <div class="value" id="marginNoVat">—</div>
             </div>
