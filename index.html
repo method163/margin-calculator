@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>Калькулятор маржи</title>
+    <title>Калькулятор логиста</title>
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
         (function (m, e, t, r, i, k, a) {
@@ -564,7 +564,7 @@
     <div class="card-container">
         <!-- Фиксированный заголовок с кнопками -->
         <div class="card-header" id="cardHeader">
-            <h1>КАЛЬКУЛЯТОР МАРЖИ</h1>
+            <h1>КАЛЬКУЛЯТОР ЛОГИСТА</h1>
             <div class="card-actions">
                 <button class="action-btn copy" title="Копировать расчеты">
                     <span class="material-symbols-outlined">content_copy</span>
@@ -604,21 +604,13 @@
 
                     <label>Тариф перевозчика без НДС:</label>
                     <input id="carrierNoVat" type="text" inputmode="decimal" placeholder="0.00">
-
-                    <!-- Десктопный блок результатов - Чистая прибыль -->
-                    <div class="result">
-                        <div>Чистая прибыль: <div class="value" id="marginNoVat">—</div>
-                        </div>
-                        <!-- Убрана строка с маржинальностью -->
-                    </div>
-
-                    <!-- Мобильный блок результатов - Чистая прибыль -->
-                    <div class="mobile-result-block" id="mobileNoVatResult">
-                        <div>Чистая прибыль:</div>
-                        <div class="value" id="mobileMarginNoVat">—</div>
-                        <!-- Убраны строки с маржинальностью -->
-                    </div>
                 </div>
+            </div>
+
+            <!-- Блок чистой прибыли на всю ширину -->
+            <div class="total-margin-block">
+                <div>Чистая прибыль:</div>
+                <div class="value" id="marginNoVat">—</div>
             </div>
 
             <!-- Новый блок для маржинальности без НДС -->
@@ -742,23 +734,15 @@
                 const marginNoVat = clientNoVat - carrierNoVat;
                 const percentNoVat = clientNoVat !== 0 ? (marginNoVat / clientNoVat) * 100 : 0;
 
-                // Обновляем десктопный блок
+                // Обновляем блок чистой прибыли
                 document.getElementById('marginNoVat').textContent = formatNumber(marginNoVat);
-                // document.getElementById('marginNoVatPercent').textContent = formatNumber(percentNoVat) + ' %';
 
-                // Обновляем мобильный блок
-                document.getElementById('mobileMarginNoVat').textContent = formatNumber(marginNoVat);
-                // document.getElementById('mobileMarginNoVatPercent').textContent = formatNumber(percentNoVat) + ' %';
-
-                // Обновляем новый блок внизу
+                // Обновляем блок маржинальности
                 document.getElementById('totalMarginNoVatPercent').textContent =
                     formatNumber(percentNoVat) + ' %';
             } else {
                 const dash = '—';
                 document.getElementById('marginNoVat').textContent = dash;
-                // document.getElementById('marginNoVatPercent').textContent = dash;
-                document.getElementById('mobileMarginNoVat').textContent = dash;
-                // document.getElementById('mobileMarginNoVatPercent').textContent = dash;
                 document.getElementById('totalMarginNoVatPercent').textContent = dash;
             }
         }
