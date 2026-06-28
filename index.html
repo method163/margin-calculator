@@ -860,7 +860,7 @@
             const orderInfoVal = document.getElementById('orderInfo').value.trim();
             const timestamp = new Date().toLocaleString('ru-RU');
 
-            const textToCopy = `
+            const textToCopy = "
 ```
 СОГЛАСОВАНИЕ ТАРИФА
 по заявке: 
@@ -877,7 +877,7 @@ ${orderInfoVal ? orderInfoVal : ''}
 Чистая прибыль: ${marginNoVatVal}
 Маржинальность: ${totalMarginNoVatPercentVal}
 ```
-`;
+";
 
             // Копирование в буфер обмена
             navigator.clipboard.writeText(textToCopy).then(() => {
