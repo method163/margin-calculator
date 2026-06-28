@@ -861,11 +861,11 @@
             const timestamp = new Date().toLocaleString('ru-RU');
 
             const textToCopy = `
-=========================
+'''
 СОГЛАСОВАНИЕ ТАРИФА
 по заявке: 
 ${orderInfoVal ? orderInfoVal : ''}
-=========================
+
 --- РАСЧЕТ С НДС (22%) ---
 Тариф заказчика: ${clientVatVal}
 Тариф перевозчика: ${carrierVatVal}
@@ -873,9 +873,10 @@ ${orderInfoVal ? orderInfoVal : ''}
 --- РАСЧЕТ БЕЗ НДС ---
 Тариф заказчика: ${clientNoVatVal}
 Тариф перевозчика: ${carrierNoVatVal}
-Чистая прибыль: ${marginNoVatVal}
 -------------------------
+Чистая прибыль: ${marginNoVatVal}
 Маржинальность: ${totalMarginNoVatPercentVal}
+'''
 `;
 
             // Копирование в буфер обмена
